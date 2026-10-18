@@ -55,6 +55,10 @@ cp "$BUILD_DIR/lib/libcactus.so" "$ANDROID_DIR/" 2>/dev/null || \
    cp "$BUILD_DIR/libcactus.so" "$ANDROID_DIR" 2>/dev/null || \
    { echo "Error: Could not find libcactus.so"; exit 1; }
 
+# StudyReels stages the lib as libcactus_engine.so (the name its Dart FFI
+# opens); emit it under that name too.
+cp "$ANDROID_DIR/libcactus.so" "$ANDROID_DIR/libcactus_engine.so"
+
 cp "$BUILD_DIR/lib/libcactus_static.a" "$ANDROID_DIR/libcactus.a" 2>/dev/null || \
    cp "$BUILD_DIR/libcactus_static.a" "$ANDROID_DIR/libcactus.a" 2>/dev/null || \
    { echo "Warning: Could not find libcactus_static.a"; }

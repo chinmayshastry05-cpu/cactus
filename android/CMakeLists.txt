@@ -212,7 +212,6 @@ else()
 endif()
 
 target_link_options(cactus PRIVATE -Wl,--gc-sections)
-target_link_options(cactus PRIVATE -Wl,--exclude-libs,ALL)
 target_link_options(cactus PRIVATE -flto)
 target_link_options(cactus PRIVATE -Wl,-z,max-page-size=16384)
 
