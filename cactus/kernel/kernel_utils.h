@@ -8,7 +8,9 @@
 #endif
 #if defined(__ANDROID__)
 #include <sys/auxv.h>
+#if defined(__aarch64__)
 #include <asm/hwcap.h>
+#endif
 #include <sched.h>
 #include <fstream>
 #endif

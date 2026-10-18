@@ -207,6 +207,21 @@ if (${ANDROID_ABI} STREQUAL "arm64-v8a")
     else()
         message(STATUS "NDK does not support I8MM - building without I8MM")
     endif()
+elseif (${ANDROID_ABI} STREQUAL "x86_64")
+    # StudyReels x86_64 (emulator E2E only): the kernels are written
+    # against ARM NEON; SIMDe (libs/simde) translates them to SSE/AVX
+    # via the arm_neon.h shim in simde_shim/. The arm64 branch above is
+    # untouched, so the shipped arm64 engine is unchanged. I8MM
+    # (ARMv8.6) is skipped: no CACTUS_COMPILE_I8MM, the non-I8MM matmul
+    # path is used. -mavx2 -mfma -mf16c give SIMDe its fast paths.
+    target_compile_options(cactus PRIVATE -mavx2 -mfma -mf16c)
+    target_compile_options(cactus_static PRIVATE -mavx2 -mfma -mf16c)
+    target_include_directories(cactus PRIVATE
+        "${CMAKE_SOURCE_DIR}/simde_shim"
+        "${CMAKE_SOURCE_DIR}/../libs/simde")
+    target_include_directories(cactus_static PRIVATE
+        "${CMAKE_SOURCE_DIR}/simde_shim"
+        "${CMAKE_SOURCE_DIR}/../libs/simde")
 else()
     message(FATAL_ERROR "Unsupported Android ABI: ${ANDROID_ABI}. Cactus only supports arm64-v8a due to ARM NEON requirements.")
 endif()
