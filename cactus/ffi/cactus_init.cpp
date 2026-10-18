@@ -356,7 +356,10 @@ const char* cactus_get_last_error() {
 }
 
 cactus_model_t cactus_init(const char* model_path, const char* corpus_dir, bool cache_index) {
-    constexpr size_t DEFAULT_CONTEXT_SIZE = 512;  // matches default sliding window size
+    // StudyReels: segmentation prompts run ~2.9K tokens (2K transcript chunk
+    // + template + JSON output); 512 silently evicted 80% of every chunk.
+    constexpr size_t DEFAULT_CONTEXT_SIZE = 4096;
+    static_assert(DEFAULT_CONTEXT_SIZE >= 4096, "segmentation chunks need >= 4K context");
 
     std::string model_path_str = model_path ? std::string(model_path) : "unknown";
 

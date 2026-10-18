@@ -141,7 +141,8 @@ bool Model::init_internal(CactusGraph* gb, const std::string& model_folder, size
                                : Precision::INT8;
     kv_cache_.init(config_.num_layers, context_size, get_kv_layer_dims(), get_kv_layer_heads(), cache_precision);
 
-    size_t window_size = std::min(context_size, size_t(512));
+    // StudyReels: window must cover the full context, not cap at 512.
+    size_t window_size = std::min(context_size, size_t(4096));
     size_t sink_size = 4;
     const char* env_window = std::getenv("CACTUS_KV_WINDOW_SIZE");
     const char* env_sink = std::getenv("CACTUS_KV_SINK_SIZE");
