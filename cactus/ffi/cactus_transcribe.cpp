@@ -1,5 +1,6 @@
 #include "cactus_ffi.h"
 #include "cactus_utils.h"
+#include "cactus_cloud.h"
 #include "../models/model.h"
 #include "telemetry/telemetry.h"
 #include "../../libs/audio/wav.h"
@@ -278,7 +279,12 @@ int cactus_transcribe(
                 }
             }
 
-            const bool cloud_handoff = !final_text.empty() && final_text.length() > 5 &&
+            // No cloud key configured => no handoff can happen, so never
+            // report one. Without a key the engine falls back to local
+            // output; a true flag here would only be an entropy heuristic,
+            // not an actual handoff, and fail-closed clients refuse it.
+            const bool cloud_handoff = !resolve_cloud_api_key(nullptr).empty() &&
+                !final_text.empty() && final_text.length() > 5 &&
                 cloud_handoff_threshold > 0.0f && max_token_entropy_norm > cloud_handoff_threshold;
 
             std::string json = construct_response_json(final_text, {}, time_to_first_token, total_time_ms, prefill_tps, decode_tps, prompt_token_count, completion_tokens, confidence, cloud_handoff);
@@ -614,7 +620,12 @@ int cactus_transcribe(
             }
         }
 
-        const bool cloud_handoff = !final_text.empty() && final_text.length() > 5 &&
+        // No cloud key configured => no handoff can happen, so never
+        // report one. Without a key the engine falls back to local
+        // output; a true flag here would only be an entropy heuristic,
+        // not an actual handoff, and fail-closed clients refuse it.
+        const bool cloud_handoff = !resolve_cloud_api_key(nullptr).empty() &&
+            !final_text.empty() && final_text.length() > 5 &&
             cloud_handoff_threshold > 0.0f && max_token_entropy_norm > cloud_handoff_threshold;
 
         std::string json = construct_response_json(final_text, {}, time_to_first_token, total_time_ms, prefill_tps, decode_tps, prompt_tokens, completion_tokens, confidence, cloud_handoff, "", segments);
